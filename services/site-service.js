@@ -1,5 +1,5 @@
 const Site = require('../models/site');
-
+const SiteUser = require('../models/siteUser');
 const Joi = require('joi');
 // Route to create a new site
 
@@ -7,7 +7,7 @@ const siteSchema = Joi.object({
     sitename: Joi.string().required(),
     siteId:Joi.number().required(),
     lattitude: Joi.number().required(),
-    longitude: Joi.number().required()
+    longitude: Joi.number().required(),
 });
 
 const createSite = async (req, res) => {
@@ -35,35 +35,68 @@ const createSite = async (req, res) => {
 const getAllSites = async (req, res) => {
     try {
         const sites = await Site.find();
-        res.json(sites);
+        res.status(200).json(sites);
     } catch (error) {
         console.error('Error fetching sites:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
 
+const siteByUserSchema = Joi.object({
+    userId: Joi.number().required(),
+});
+
 // Route to get a specific site by ID
-const getSiteById =  async (req, res) => {
-    try {
-        const site = await Site.findById(req.params.id);
-        if (!site) {
-            return res.status(404).json({ error: 'Site not found' });
-        }
-        res.json(site);
-    } catch (error) {
-        console.error('Error fetching site:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-}
+// const getSiteByUserId =  async (req, res) => {
+//     const { error } = siteByUserSchema.validate(req.params.userId);
+//     if (error) {
+//         return res.status(400).json({ error: error.details[0].message });
+//     }
+//     try {
+//         const site = await SiteUser.find({userId: req.params.userId});
+//         if (!site) {
+//             return res.status(404).json({ error: `No Sites found for userId ${req.params.userId}` });
+//         }
+//         res.status(200).json(site);
+//     } catch (error) {
+//         console.error('Error fetching site:', error);
+//         res.status(500).json({ error: 'Internal server error' });
+//     }
+// }
+
 
 // Route to update a site by ID
-const updateSite = async (req, res) => {
+
+const siteByUserIdSiteIdSchema = Joi.object({
+    userId: Joi.number().required(),
+    siteId: Joi.number().required(),
+});
+
+const updateSiteByUserIdSiteId = async (req, res) => {
+    const { error } = siteByUserIdSiteIdSchema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ error: error.details[0].message });
+    }
+    
     try {
-        const updatedSite = await Site.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!updatedSite) {
+        const foundSiteUser = await SiteUser.findOne({ userId: req.body.userId, siteId: req.body.siteId });
+         
+        if (!foundSiteUser) {
+            return res.status(404).json({ error: 'SiteUser not found' });
+        }
+        const foundSite = await Site.findOne({ siteId: req.body.siteId });
+         
+        if (!foundSite) {
             return res.status(404).json({ error: 'Site not found' });
         }
-        res.json(updatedSite);
+
+        const newSiteName = req.body.sitename || foundSite.sitename;
+        const newUpdatedAt = new Date();
+        foundSite.sitename = newSiteName;
+        foundSite.updatedAt = newUpdatedAt;
+        await foundSite.save();
+
+        res.json({ message:"updated site is::", site:foundSite });
     } catch (error) {
         console.error('Error updating site:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -71,13 +104,18 @@ const updateSite = async (req, res) => {
 }
 
 // Route to delete a site by ID
-const deleteSite =  async (req, res) => {
+const deleteSiteByUserIdSiteId = async (req, res) => {
+    const { error } = siteByUserIdSiteIdSchema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ error: error.details[0].message });
+    }
+    
     try {
-        const deletedSite = await Site.findByIdAndDelete(req.params.id);
+        const deletedSite = await SiteUser.deleteOne({ userId: req.body.userId, siteId: req.body.siteId });
         if (!deletedSite) {
-            return res.status(404).json({ error: 'Site not found' });
+            return res.status(404).json({ error: 'No sites to be deleted' });
         }
-        res.json({ message: 'Site deleted successfully' });
+        res.status(200).json({ message: 'Site deleted successfully', deleteCount:deletedSite });
     } catch (error) {
         console.error('Error deleting site:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -85,4 +123,5 @@ const deleteSite =  async (req, res) => {
 }
 
 
-module.exports = {deleteSite, createSite, updateSite, getAllSites, getSiteById};
+
+module.exports = {deleteSiteByUserIdSiteId, createSite, updateSiteByUserIdSiteId, getAllSites};

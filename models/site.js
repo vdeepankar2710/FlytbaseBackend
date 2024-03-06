@@ -6,7 +6,8 @@ const siteSchema = new mongoose.Schema({
     lattitude: { type: Number, required: true },
     longitude: {type: Number, required: true },
     createdAt: { type: Date, default: new Date() },
-    updatedAt: { type: Date, default: new Date() }
+    updatedAt: { type: Date, default: new Date() },
+    // userId: { type: Number, required: true, ref: 'User'}
 });
 
 
