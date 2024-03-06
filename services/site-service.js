@@ -31,20 +31,9 @@ const createSite = async (req, res) => {
     }
 }
 
-// Route to get all sites
-const getAllSites = async (req, res) => {
-    try {
-        const sites = await Site.find();
-        res.status(200).json(sites);
-    } catch (error) {
-        console.error('Error fetching sites:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-}
-
-const siteByUserSchema = Joi.object({
-    userId: Joi.number().required(),
-});
+// const siteByUserSchema = Joi.object({
+//     userId: Joi.number().required(),
+// });
 
 // Route to get a specific site by ID
 // const getSiteByUserId =  async (req, res) => {
@@ -72,6 +61,27 @@ const siteByUserIdSiteIdSchema = Joi.object({
     siteId: Joi.number().required(),
 });
 
+const addSiteByUserIdSiteId = async (req, res) => {
+    const { error } = siteByUserIdSiteIdSchema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ error: error.details[0].message });
+    }
+    
+    try {
+        const existingSiteUser = await SiteUser.findOne({ userId: req.body.userId, siteId: req.body.siteId});
+        if (existingSiteUser) {
+            return res.status(409).json({ error: 'This SiteUser already exists' });
+        }
+        const addedSiteUser = await SiteUser.create({ userId: req.body.userId, siteId: req.body.siteId});
+        res.status(201).json({ message: 'Added site under user successfully', addedObj:addedSiteUser});
+    } catch (error) {
+        console.error('Error adding site:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+
+
 const updateSiteByUserIdSiteId = async (req, res) => {
     const { error } = siteByUserIdSiteIdSchema.validate(req.body);
     if (error) {
@@ -96,7 +106,7 @@ const updateSiteByUserIdSiteId = async (req, res) => {
         foundSite.updatedAt = newUpdatedAt;
         await foundSite.save();
 
-        res.json({ message:"updated site is::", site:foundSite });
+        res.status(200).json({ message:"updated site is::", site:foundSite });
     } catch (error) {
         console.error('Error updating site:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -124,4 +134,4 @@ const deleteSiteByUserIdSiteId = async (req, res) => {
 
 
 
-module.exports = {deleteSiteByUserIdSiteId, createSite, updateSiteByUserIdSiteId, getAllSites};
+module.exports = {deleteSiteByUserIdSiteId, createSite, updateSiteByUserIdSiteId, addSiteByUserIdSiteId};

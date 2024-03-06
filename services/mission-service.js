@@ -9,6 +9,7 @@ const missionSchema = Joi.object({
     alt: Joi.string().required(),
     speed: Joi.string().required(),
     name: Joi.string().required(),
+    categoryId:Joi.number().required(),
 });
 
 const createMission = async (req, res) => {
@@ -17,7 +18,7 @@ const createMission = async (req, res) => {
         if (error) {
             return res.status(400).json({ error: error.details[0].message });
         }
-        const existingMission = await Mission.findOne({ missionId: req.body.missionId, alt:req.body.alt, name:req.body.name, speed:req.body.speed});
+        const existingMission = await Mission.findOne({ missionId: req.body.missionId, alt:req.body.alt, name:req.body.name, speed:req.body.speed, categoryId:req.body.categoryId});
         if (existingMission) {
             return res.status(409).json({ error: 'This Mission already exists' });
         }
@@ -31,18 +32,6 @@ const createMission = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
-
-// Route to get all missions
-const getAllMissions = async (req, res) => {
-  try {
-    const missions = await Mission.find();
-    res.status(200).json(missions);
-  } catch (error) {
-    console.error('Error fetching missions:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-}
-
 // Route to get a specific mission by ID
 
 const findBySiteSchema = Joi.object({
@@ -58,42 +47,13 @@ const getMissionBySiteId =  async (req, res) => {
         if (!missions) {
             return res.status(404).json({ error: 'Missions not found' });
         }
-        let missionArr = [];
-        for (let missionEle of missions) {
-            missionArr.push(await Mission.findOne({siteId:missionEle.siteId}))
-        }
+        const missionIds = missions.map(mission=> mission.missionId);
+
+        const missionArr = await Mission.find({ missionId: { $in: missionIds } });
         
         res.status(200).json({ missions: missionArr });
     } catch (error) {
         console.error('Error fetching mission:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-}
-
-// Route to update a mission by ID
-const updateMissionById = async (req, res) => {
-    try {
-        const updatedMission = await Mission.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!updatedMission) {
-        return res.status(404).json({ error: 'Mission not found' });
-        }
-        res.json(updatedMission);
-    } catch (error) {
-        console.error('Error updating mission:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-}
-
-// Route to delete a mission by ID
-const deleteMissionById =  async (req, res) => {
-    try {
-        const deletedMission = await Mission.findByIdAndDelete(req.params.id);
-        if (!deletedMission) {
-        return res.status(404).json({ error: 'Mission not found' });
-        }
-        res.json({ message: 'Mission deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting mission:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
@@ -123,7 +83,6 @@ const addMissionByUserIdSiteId = async (req, res) => {
     }
 }
 
-
 const updateMissionByUserIdSiteId = async (req, res) => {
     const { error } = userIdSiteIdMissionIdSchema.validate(req.body);
     if (error) {
@@ -137,7 +96,7 @@ const updateMissionByUserIdSiteId = async (req, res) => {
         }
         const foundMission = await Mission.findOne({ missionId:req.body.missionId});
         if (!foundMission) {
-            return res.status(404).json({ error: 'Drone not found' });
+            return res.status(404).json({ error: 'Mission not found' });
         }
         const newUpdatedAt = new Date();
         const newName = req.body.name || foundMission.name;
@@ -155,7 +114,7 @@ const updateMissionByUserIdSiteId = async (req, res) => {
         await SiteMission.save(existingSiteMission);
         await Mission.save(foundMission);
 
-        res.status(200).json({ message: 'Updated drone under site successfully', addedObj: addedSite });
+        res.status(200).json({ message: 'Updated mission under site successfully', addedObj: addedSite });
     } catch (error) {
         console.error('Error adding site:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -181,4 +140,4 @@ const deleteMissionByUserIdSiteId = async (req, res) => {
 }
 
 
-module.exports = {deleteMissionByUserIdSiteId, updateMissionByUserIdSiteId,addMissionByUserIdSiteId,deleteMissionById, createMission, updateMissionById, getAllMissions, getMissionBySiteId};
+module.exports = {deleteMissionByUserIdSiteId, updateMissionByUserIdSiteId,addMissionByUserIdSiteId, createMission, getMissionBySiteId};

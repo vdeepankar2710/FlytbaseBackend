@@ -6,7 +6,7 @@ const droneSchema = new mongoose.Schema({
     deletedOn: { type: Date, required: false, default: null }, 
     droneType: { type: String, required: false },
     makeName: { type: String, required: false },
-    name: { type: String, required:true },
+    name: { type: String, required:true,  unique: true },
     createdAt: { type: Date, default: new Date() },
     updatedAt: { type: Date, default: new Date() }
 });

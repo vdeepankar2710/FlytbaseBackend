@@ -30,17 +30,6 @@ const createDrone = async (req, res) => {
     }
 }
 
-// Route to get all drones
-const getAllDrones =  async (req, res) => {
-    try {
-        const drones = await Drone.find();
-        res.status(200).json(drones);
-    } catch (error) {
-        console.error('Error fetching drones:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-}
-
 // Route to get a specific drone by ID
 // const getDroneBySiteId = async (req, res) => {
 //     const { error } = droneSchema.validate(req.params.id);
@@ -59,35 +48,6 @@ const getAllDrones =  async (req, res) => {
 //     }
 // }
 
-// Route to update a drone by ID
-const updateDroneById = async (req, res) => {
-    try {
-        const updatedDrone = await Drone.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!updatedDrone) {
-        return res.status(404).json({ error: 'Drone not found' });
-        }
-        res.json(updatedDrone);
-    } catch (error) {
-        console.error('Error updating drone:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-}
-
-// Route to delete a drone by ID
-const deleteDroneById =  async (req, res) => {
-    try {
-        const deletedDrone = await Drone.findByIdAndDelete(req.params.id);
-        if (!deletedDrone) {
-        return res.status(404).json({ error: 'Drone not found' });
-        }
-        res.json({ message: 'Drone deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting drone:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-}
-
-
 const findBySiteSchema = Joi.object({
     siteId: Joi.number().required(),
 });
@@ -102,11 +62,9 @@ const getDroneBySiteId =  async (req, res) => {
         if (!drones) {
             return res.status(404).json({ error: 'Drones not found' });
         }
-        let droneArr = [];
-        for (let droneEle of drones) {
-            droneArr.push(await Drone.findOne({siteId:droneEle.siteId}))
-        }
-        
+        const droneIds = drones.map(drone => drone.droneId);
+
+        const droneArr = await Drone.find({ droneId: { $in: droneIds } });
         res.status(200).json({ drones: droneArr });
     } catch (error) {
         console.error('Error fetching mission:', error);
@@ -121,6 +79,7 @@ const userIdSiteIdDroneIdSchema = Joi.object({
 });
 
 const addDroneByUserIdSiteId = async (req, res) => {
+    console.log("user ", req.user);
     const { error } = userIdSiteIdDroneIdSchema.validate(req.body);
     if (error) {
         return res.status(400).json({ error: error.details[0].message });
@@ -191,16 +150,16 @@ const updateDroneByUserIdSiteId = async (req, res) => {
         foundDrone.updatedAt = newUpdatedAt;
         foundDrone.name = newName;
         foundDrone.droneType = newDroneType;
-        
+        existingSiteDrone.updatedAt = newUpdatedAt;
+        await SiteDrone.save(existingSiteDrone);
         await Drone.save(foundDrone);
 
-        res.status(200).json({ message: 'Updated drone under site successfully', addedObj: addedSite });
+        res.status(200).json({ message: 'Updated drone under site successfully', addedObj: foundDrone });
     } catch (error) {
         console.error('Error adding site:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
-
 
 const deleteDroneByUserIdSiteId = async (req, res) => {
     const { error } = userIdSiteIdDroneIdSchema.validate(req.body);
@@ -208,11 +167,11 @@ const deleteDroneByUserIdSiteId = async (req, res) => {
         return res.status(400).json({ error: error.details[0].message });
     }
     try {
-        const deltedSiteDrone = await SiteDrone.deleteOne({ userId: req.body.userId, siteId: req.body.siteId, droneId:req.body.droneId});
-        if (!deltedSiteDrone) {
+        const deletedSiteDrone = await SiteDrone.deleteOne({ userId: req.body.userId, siteId: req.body.siteId, droneId:req.body.droneId});
+        if (!deletedSiteDrone) {
             return res.status(404).json({ error: 'This SiteDrone does not exists' });
         }
-        res.status(200).json({ message: 'Deleted drone under site successfully', deletedDrone: foundDrone });
+        res.status(200).json({ message: 'Deleted drone under site successfully', deletedDrone: deletedSiteDrone });
     } catch (error) {
         console.error('Error adding site:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -220,6 +179,6 @@ const deleteDroneByUserIdSiteId = async (req, res) => {
 }
 
 
-module.exports = {updateDroneFromSiteToSiteByUserIdSiteId,updateDroneByUserIdSiteId, addDroneByUserIdSiteId, deleteDroneByUserIdSiteId, deleteDroneById, createDrone, updateDroneById, getAllDrones, getDroneBySiteId};
+module.exports = {updateDroneFromSiteToSiteByUserIdSiteId, updateDroneByUserIdSiteId, addDroneByUserIdSiteId, deleteDroneByUserIdSiteId, createDrone, getDroneBySiteId};
 
 

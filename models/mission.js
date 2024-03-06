@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const missionSchema = new mongoose.Schema({
     missionId:{type:Number, required:true, unique:true},
-    // userId: {type: Number,  required: true, ref: 'User'},
+    categoryId: {type: Number,  required: true, ref: 'Category'},
     alt: { type: String, required: true },
     speed: { type: String, required: true },
     name: { type: String, required: true, unique: true },
