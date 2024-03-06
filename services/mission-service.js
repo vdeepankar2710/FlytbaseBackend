@@ -32,8 +32,6 @@ const createMission = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
-// Route to get a specific mission by ID
-
 const findBySiteSchema = Joi.object({
     siteId: Joi.number().required(),
 });

@@ -31,31 +31,6 @@ const createSite = async (req, res) => {
     }
 }
 
-// const siteByUserSchema = Joi.object({
-//     userId: Joi.number().required(),
-// });
-
-// Route to get a specific site by ID
-// const getSiteByUserId =  async (req, res) => {
-//     const { error } = siteByUserSchema.validate(req.params.userId);
-//     if (error) {
-//         return res.status(400).json({ error: error.details[0].message });
-//     }
-//     try {
-//         const site = await SiteUser.find({userId: req.params.userId});
-//         if (!site) {
-//             return res.status(404).json({ error: `No Sites found for userId ${req.params.userId}` });
-//         }
-//         res.status(200).json(site);
-//     } catch (error) {
-//         console.error('Error fetching site:', error);
-//         res.status(500).json({ error: 'Internal server error' });
-//     }
-// }
-
-
-// Route to update a site by ID
-
 const siteByUserIdSiteIdSchema = Joi.object({
     userId: Joi.number().required(),
     siteId: Joi.number().required(),
@@ -79,8 +54,6 @@ const addSiteByUserIdSiteId = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
-
-
 
 const updateSiteByUserIdSiteId = async (req, res) => {
     const { error } = siteByUserIdSiteIdSchema.validate(req.body);
@@ -113,7 +86,6 @@ const updateSiteByUserIdSiteId = async (req, res) => {
     }
 }
 
-// Route to delete a site by ID
 const deleteSiteByUserIdSiteId = async (req, res) => {
     const { error } = siteByUserIdSiteIdSchema.validate(req.body);
     if (error) {
@@ -131,7 +103,5 @@ const deleteSiteByUserIdSiteId = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
-
-
 
 module.exports = {deleteSiteByUserIdSiteId, createSite, updateSiteByUserIdSiteId, addSiteByUserIdSiteId};

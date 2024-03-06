@@ -30,24 +30,6 @@ const createDrone = async (req, res) => {
     }
 }
 
-// Route to get a specific drone by ID
-// const getDroneBySiteId = async (req, res) => {
-//     const { error } = droneSchema.validate(req.params.id);
-//     if (error) {
-//         return res.status(400).json({ error: error.details[0].message });
-//     }
-//     try {
-//         const drone = await Drone.findById(req.params.id);
-//         if (!drone) {
-//             return res.status(404).json({ error: 'Drone not found' });
-//         }
-//         res.status(200).json(drone);
-//     } catch (error) {
-//         console.error('Error fetching drone:', error);
-//         res.status(500).json({ error: 'Internal server error' });
-//     }
-// }
-
 const findBySiteSchema = Joi.object({
     siteId: Joi.number().required(),
 });
@@ -178,7 +160,4 @@ const deleteDroneByUserIdSiteId = async (req, res) => {
     }
 }
 
-
 module.exports = {updateDroneFromSiteToSiteByUserIdSiteId, updateDroneByUserIdSiteId, addDroneByUserIdSiteId, deleteDroneByUserIdSiteId, createDrone, getDroneBySiteId};
-
-

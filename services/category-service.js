@@ -54,7 +54,6 @@ const getMissionByCategoryId =  async (req, res) => {
     }
 }
 
-
 const getDronesByCategoryId =  async (req, res) => {
     try {
         const { error } = findByCategorySchema.validate(req.params.categoryId);
