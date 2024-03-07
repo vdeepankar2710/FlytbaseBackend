@@ -34,7 +34,7 @@ const findBySiteSchema = Joi.object({
     siteId: Joi.number().required(),
 });
 
-const getDroneBySiteId =  async (req, res) => {
+const getDroneBySiteId = async (req, res) => {
     try {
         const { error } = findBySiteSchema.validate(req.params.siteId);
         if (error) {

@@ -29,7 +29,7 @@ module.exports = app => {
 
     router.post('/drone/create', DroneService.createDrone);
     router.post('/drone/updateDroneFromSiteToSiteByUserIdSiteId', DroneService.updateDroneFromSiteToSiteByUserIdSiteId);
-    router.get('/drone/getDroneBySiteId/:siteId', DroneService.getDroneBySiteId);
+    router.get('/drone/getDroneBySiteId', DroneService.getDroneBySiteId);
     router.post('/drone/addDroneByUserIdSiteId', DroneService.addDroneByUserIdSiteId);
     router.post('/drone/updateDroneByUserIdSiteId', DroneService.updateDroneByUserIdSiteId);
     router.post('/drone/deleteDroneByUserIdSiteId', DroneService.deleteDroneByUserIdSiteId);
@@ -37,7 +37,7 @@ module.exports = app => {
     // Mission service
     
     router.post('/mission/create', MissionService.createMission);
-    router.get('/mission/getMissionBySiteId/:siteId', MissionService.getMissionBySiteId);
+    router.get('/mission/getMissionBySiteId', MissionService.getMissionBySiteId);
     router.post('/mission/addMissionByUserIdSiteId', MissionService.addMissionByUserIdSiteId);
     router.post('/mission/updateMissionByUserIdSiteId', MissionService.updateMissionByUserIdSiteId);
     router.post('/mission/deleteMissionByUserIdSiteId', MissionService.deleteMissionByUserIdSiteId);
@@ -45,8 +45,8 @@ module.exports = app => {
     //Category service
 
     router.post('/category/create', CategoryService.createCategory);
-    router.get('/category/getMissionByCategoryId/:categoryId', CategoryService.getMissionByCategoryId);
-    router.get('/category/getDronesByCategoryId/:categoryId', CategoryService.getDronesByCategoryId);
+    router.get('/category/getMissionByCategoryId', CategoryService.getMissionByCategoryId);
+    router.get('/category/getDronesByCategoryId', CategoryService.getDronesByCategoryId);
 
     app.use(router);
 

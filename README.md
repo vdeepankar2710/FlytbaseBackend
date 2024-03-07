@@ -137,3 +137,71 @@ response:
 "\_\_v": 0
 }
 }
+
+### addSiteByUserIdSiteId : post:: http://localhost:8080/site/addSiteByUserIdSiteId
+
+body:
+{
+"userId":1,
+"siteId":1
+}
+response:
+{
+"message": "Added site under user successfully",
+"addedObj": {
+"siteId": 1,
+"createdAt": "2024-03-07T08:33:51.400Z",
+"updatedAt": "2024-03-07T08:33:51.400Z",
+"userId": 1,
+"\_id": "65e97d9ac843a4e46d4fccfa",
+"\_\_v": 0
+}
+}
+
+### Update Site: post :: http://localhost:8080/site/update
+
+body:
+{
+"userId":1,
+"siteId":1,
+"sitename":"sitename_01"
+
+}
+response:
+{
+"message": "updated site is::",
+"site": {
+"\_id": "65e978d6ed0f77a68d811791",
+"sitename": "sitename_01",
+"siteId": 1,
+"lattitude": 242.5765373,
+"longitude": 23.57675688,
+"createdAt": "2024-03-07T08:20:27.380Z",
+"updatedAt": "2024-03-07T08:46:58.035Z",
+"\_\_v": 0
+}
+}
+
+### addDroneByUserIdSiteId : post::http://localhost:8080/drone/addDroneByUserIdSiteId
+
+body:
+{
+"userId":1,
+"siteId":1,
+"droneId":1
+
+}
+
+response:
+{
+"message": "Added drone under site successfully",
+"addedObj": {
+"userId": 1,
+"droneId": 1,
+"siteId": 1,
+"createdAt": "2024-03-07T08:53:55.233Z",
+"updatedAt": "2024-03-07T08:53:55.233Z",
+"\_id": "65e981c2febca603c834a643",
+"\_\_v": 0
+}
+}
