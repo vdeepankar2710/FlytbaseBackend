@@ -78,7 +78,9 @@ const updateSiteByUserIdSiteId = async (req, res) => {
         const newUpdatedAt = new Date();
         foundSite.sitename = newSiteName;
         foundSite.updatedAt = newUpdatedAt;
-        await foundSite.save();
+        var nSite = new Site(foundSite);
+
+        await nSite.save();
 
         res.status(200).json({ message:"updated site is::", site:foundSite });
     } catch (error) {

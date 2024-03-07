@@ -102,7 +102,9 @@ const updateDroneFromSiteToSiteByUserIdSiteId = async (req, res) => {
         existingSiteDrone.siteId = req.body.newSiteId
         existingSiteDrone.updatedAt = newUpdatedAt
         
-        await SiteDrone.save(existingSiteDrone);
+        var nSiteDrone = new SiteDrone(existingSiteDrone)
+        
+        await nSiteDrone.save();
 
         res.status(200).json({ message: 'Updated drone under site successfully', addedObj: existingSiteDrone });
     } catch (error) {
@@ -112,15 +114,15 @@ const updateDroneFromSiteToSiteByUserIdSiteId = async (req, res) => {
 }
 
 const updateDroneByUserIdSiteId = async (req, res) => {
-    const { error } = userIdSiteIdDroneIdSchema.validate(req.body);
+    const { error } = userIdSiteIdDroneIdSchema.validate({ userId: req.body.userId, siteId: req.body.siteId, droneId:req.body.droneId});
     if (error) {
         return res.status(400).json({ error: error.details[0].message });
     }
     
     try {
         const existingSiteDrone = await SiteDrone.findOne({ userId: req.body.userId, siteId: req.body.siteId, droneId:req.body.droneId});
-        if (existingSiteDrone) {
-            return res.status(409).json({ error: 'This SiteDrone already exists' });
+        if (!existingSiteDrone) {
+            return res.status(409).json({ error: 'This SiteDrone not found' });
         }
         const foundDrone = await Drone.findOne({ droneId:req.body.droneId});
         if (!foundDrone) {
@@ -133,8 +135,11 @@ const updateDroneByUserIdSiteId = async (req, res) => {
         foundDrone.name = newName;
         foundDrone.droneType = newDroneType;
         existingSiteDrone.updatedAt = newUpdatedAt;
-        await SiteDrone.save(existingSiteDrone);
-        await Drone.save(foundDrone);
+
+        var nSiteDrone = new SiteDrone(existingSiteDrone)
+        var nDrone = new Drone(foundDrone)
+        await nSiteDrone.save();
+        await nDrone.save();
 
         res.status(200).json({ message: 'Updated drone under site successfully', addedObj: foundDrone });
     } catch (error) {

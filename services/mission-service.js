@@ -109,8 +109,11 @@ const updateMissionByUserIdSiteId = async (req, res) => {
         foundMission.waypoints = newWaypoints
         existingSiteMission.updatedAt = newUpdatedAt
 
-        await SiteMission.save(existingSiteMission);
-        await Mission.save(foundMission);
+        var nSiteMission = new SiteMission(existingSiteMission);
+        var nMission = new Mission(foundMission);
+
+        await nSiteMission.save();
+        await nMission.save();
 
         res.status(200).json({ message: 'Updated mission under site successfully', addedObj: foundMission });
     } catch (error) {
