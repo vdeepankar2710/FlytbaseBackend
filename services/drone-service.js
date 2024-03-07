@@ -88,7 +88,7 @@ const updateDroneSiteToSiteSchema = Joi.object({
 });
 
 const updateDroneFromSiteToSiteByUserIdSiteId = async (req, res) => {
-    const { error } = updateDroneSiteToSiteSchema.validate(req.body);
+    const { error } = updateDroneSiteToSiteSchema.validate({userId: req.body.userId, prevSiteId: req.body.prevSiteId, droneId: req.body.droneId, newSiteId:req.body.newSiteId});
     if (error) {
         return res.status(400).json({ error: error.details[0].message });
     }

@@ -57,7 +57,7 @@ const addSiteByUserIdSiteId = async (req, res) => {
 }
 
 const updateSiteByUserIdSiteId = async (req, res) => {
-    const { error } = siteByUserIdSiteIdSchema.validate(req.body);
+    const { error } = siteByUserIdSiteIdSchema.validate({ userId: req.body.userId, siteId: req.body.siteId });
     if (error) {
         return res.status(400).json({ error: error.details[0].message });
     }
@@ -88,7 +88,7 @@ const updateSiteByUserIdSiteId = async (req, res) => {
 }
 
 const deleteSiteByUserIdSiteId = async (req, res) => {
-    const { error } = siteByUserIdSiteIdSchema.validate(req.body);
+    const { error } = siteByUserIdSiteIdSchema.validate({ userId: req.body.userId, siteId: req.body.siteId });
     if (error) {
         return res.status(400).json({ error: error.details[0].message });
     }

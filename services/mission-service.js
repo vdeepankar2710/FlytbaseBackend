@@ -112,7 +112,7 @@ const updateMissionByUserIdSiteId = async (req, res) => {
         await SiteMission.save(existingSiteMission);
         await Mission.save(foundMission);
 
-        res.status(200).json({ message: 'Updated mission under site successfully', addedObj: addedSite });
+        res.status(200).json({ message: 'Updated mission under site successfully', addedObj: foundMission });
     } catch (error) {
         console.error('Error adding site:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -130,7 +130,7 @@ const deleteMissionByUserIdSiteId = async (req, res) => {
         if (!deletedSiteMission) {
             return res.status(404).json({ error: 'This SiteMission does not exists' });
         }
-        res.status(200).json({ message: 'Deleted mission under site successfully', deletedMission: foundMission });
+        res.status(200).json({ message: 'Deleted mission under site successfully', deletedMission: deletedSiteMission });
     } catch (error) {
         console.error('Error adding site:', error);
         res.status(500).json({ error: 'Internal server error' });
