@@ -11,12 +11,13 @@ const siteSchema = Joi.object({
 });
 
 const createSite = async (req, res) => {
+    // console.log("user", req.user);
     try {
         const { error } = siteSchema.validate(req.body);
         if (error) {
             return res.status(400).json({ error: error.details[0].message });
         }
-        const existingSite = await Site.findOne({ sitename: req.body.sitename, siteId:req.body.siteId, lattitude:req.body.lattitude, longitude:req.body.longitude});
+        const existingSite = await Site.findOne({ sitename: req.body.sitename, siteId:req.body.siteId});
         if (existingSite) {
             return res.status(409).json({ error: 'This Site already exists' });
         }
